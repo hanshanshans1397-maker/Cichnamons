@@ -1,0 +1,246 @@
+using System;
+using System.Collections.Generic;
+
+class Utok
+{
+  public string Nazev;
+  public int Poskozeni;
+  public string Popis;
+
+  public Utok(string nazev, int poskozeni, string popis)
+  {
+      Nazev = nazev;
+      Poskozeni = poskozeni;
+      Popis = popis;
+  }
+
+  public int GetPoskozeni()
+  {
+      return Poskozeni;
+  }
+
+  public void VypisInfo()
+  {
+      Console.WriteLine($"  {Nazev} – poskozeni: {Poskozeni}");
+  }
+}
+
+class Cichnamon
+{
+  public string Jmeno;
+  public int Zdravi;
+  public int MaxZdravi;
+  public int BonusUtok;
+  public Utok ZakladniUtok;
+  public Utok SpecialniUtok;
+  private bool UzdraveniPouzito = false;
+  private int TahyOdSpecialniho = 2;
+
+  public Cichnamon(string jmeno, int zdravi, int bonusUtok, Utok zakladni, Utok specialni)
+  {
+      Jmeno = jmeno;
+      Zdravi = zdravi;
+      MaxZdravi = zdravi;
+      BonusUtok = bonusUtok;
+      ZakladniUtok = zakladni;
+      SpecialniUtok = specialni;
+  }
+
+  public void ProvedZakladniUtok(Cichnamon protivnik)
+  {
+      int poskozeni = ZakladniUtok.GetPoskozeni() + BonusUtok;
+      Console.WriteLine($"{Jmeno} pouzil {ZakladniUtok.Nazev}!");
+      Console.WriteLine($"{ZakladniUtok.Popis}");
+      protivnik.SnizZdravi(poskozeni);
+      TahyOdSpecialniho++;
+  }
+
+  public void ProvedSpecialniUtok(Cichnamon protivnik)
+  {
+      if (TahyOdSpecialniho < 2)
+      {
+          Console.WriteLine("Specialni utok lze pouzit az kazdy druhy tah! Pouzivam zakladni.");
+          ProvedZakladniUtok(protivnik);
+          return;
+      }
+      int poskozeni = SpecialniUtok.GetPoskozeni() + BonusUtok;
+      Console.WriteLine($"{Jmeno} pouzil {SpecialniUtok.Nazev}!");
+      Console.WriteLine($"{SpecialniUtok.Popis}");
+      protivnik.SnizZdravi(poskozeni);
+      TahyOdSpecialniho = 0;
+  }
+
+  public void SnizZdravi(int poskozeni)
+  {
+      Zdravi -= poskozeni;
+      if (Zdravi < 0) Zdravi = 0;
+      Console.WriteLine($"{Jmeno} ztratil {poskozeni} zivotu. Zbýva: {Zdravi}/{MaxZdravi}");
+  }
+
+  public void Uzdravi(int pocet)
+  {
+      if (UzdraveniPouzito)
+      {
+          Console.WriteLine("Uzdraveni uz bylo pouzito!");
+          return;
+      }
+      Zdravi += pocet;
+      if (Zdravi > MaxZdravi) Zdravi = MaxZdravi;
+      Console.WriteLine($"{Jmeno} se uzdravil o {pocet} zivotu. Zbýva: {Zdravi}/{MaxZdravi}");
+      UzdraveniPouzito = true;
+  }
+
+  public bool JeNazivu()
+  {
+      return Zdravi > 0;
+  }
+
+  public void VypisInfo()
+  {
+      Console.WriteLine($"{Jmeno} | Zdravi: {Zdravi}/{MaxZdravi} | Bonus utok: +{BonusUtok}");
+      Console.Write("  Zakladni: "); ZakladniUtok.VypisInfo();
+      Console.Write("  Specialni: "); SpecialniUtok.VypisInfo();
+  }
+}
+
+class Trener
+{
+  public string Jmeno;
+  public List<Cichnamon> Cichnamoni = new List<Cichnamon>();
+  public Cichnamon AktualniCichnamon;
+
+  public Trener(string jmeno)
+  {
+      Jmeno = jmeno;
+  }
+
+  public void PridejCichnamona(Cichnamon c)
+  {
+      Cichnamoni.Add(c);
+  }
+
+  public void VyberCichnamona(int index)
+  {
+      AktualniCichnamon = Cichnamoni[index];
+  }
+}
+
+class Program
+{
+  static Random rng = new Random();
+
+  static void Main()
+  {
+      Console.WriteLine("Vítej v Cichnamon Arene!");
+      Console.Write("Zadej sve jmeno: ");
+      string jmenoHrace = Console.ReadLine();
+
+      Trener hrac = new Trener(jmenoHrace);
+      Trener pocitac = new Trener("Pocitac");
+
+
+      Cichnamon ohnosko = new Cichnamon("Eduard Ohnosko", 100, 5,
+          new Utok("Známka z ohně", 15, "Ohnosko vypaluje znamku primo do duse!"),
+          new Utok("Hoska v plamenech", 30, "Ohnosko se vznítil a sežehl vsechno kolem!"));
+
+
+      Cichnamon skalka = new Cichnamon("Skalka Skalnaty", 120, 3,
+          new Utok("Kamenný test", 12, "Skalka hodi tezky test primo do obliceje!"),
+          new Utok("Lavina úkolů", 28, "Skalka spousti nekonecnou lavinu ukolu!"));
+
+
+      Cichnamon rakosnicek = new Cichnamon("Rákosníček", 95, 7,
+          new Utok("Mokry rukav", 16, "Rakosnicek pleskne mokrym rukavem!"),
+          new Utok("Bahno z rybníka", 32, "Rakosnicek te pohltí bahnem!"));
+
+
+      Cichnamon hroznyman = new Cichnamon("Jan Hroznyman", 110, 4,
+          new Utok("Hrózný pohled", 13, "Hroznyman te prorte svym nezapomenutelnym pohledem!"),
+          new Utok("Grossman kombo", 29, "Hroznyman spousti legendarni kombo ukolu a zkoušek!"));
+
+
+      Cichnamon vojtkulak = new Cichnamon("Vojtkulak", 105, 6,
+          new Utok("Pěstní rovnice", 14, "Vojtkulak te udeří rovnici primo do mozku!"),
+          new Utok("Kulacky z fyziky", 31, "Vojtkulak spousti krupobiti fyzikalnich prikladu!"));
+
+      hrac.PridejCichnamona(ohnosko);
+      hrac.PridejCichnamona(skalka);
+      hrac.PridejCichnamona(rakosnicek);
+      hrac.PridejCichnamona(hroznyman);
+      hrac.PridejCichnamona(vojtkulak);
+
+
+      Console.WriteLine("\nVyber si sveho Cichnamona:");
+      for (int i = 0; i < hrac.Cichnamoni.Count; i++)
+      {
+          Console.Write($"{i + 1} - ");
+          hrac.Cichnamoni[i].VypisInfo();
+      }
+      Console.Write("Tvoje volba: ");
+      int volba = int.Parse(Console.ReadLine()) - 1;
+      hrac.VyberCichnamona(volba);
+      Console.WriteLine($"Vybral sis: {hrac.AktualniCichnamon.Jmeno}");
+
+
+      Cichnamon zlomysl = new Cichnamon("Zlomysl", 100, 4,
+          new Utok("Temny uder", 14, "Zlomysl uderil temnou silou!"),
+          new Utok("Prokletí", 27, "Zlomysl seslal prokletí!"));
+      pocitac.PridejCichnamona(zlomysl);
+      pocitac.VyberCichnamona(0);
+      Console.WriteLine($"Protivnik je: {pocitac.AktualniCichnamon.Jmeno}\n");
+
+
+      bool hracNaTahu = true;
+
+      while (hrac.AktualniCichnamon.JeNazivu() && pocitac.AktualniCichnamon.JeNazivu())
+      {
+          if (hracNaTahu)
+          {
+              Console.WriteLine("\n--- TVUJ TAH ---");
+              Console.WriteLine($"Ty: {hrac.AktualniCichnamon.Jmeno} | HP: {hrac.AktualniCichnamon.Zdravi}/{hrac.AktualniCichnamon.MaxZdravi}");
+              Console.WriteLine($"Protivnik: {pocitac.AktualniCichnamon.Jmeno} | HP: {pocitac.AktualniCichnamon.Zdravi}/{pocitac.AktualniCichnamon.MaxZdravi}");
+              Console.WriteLine($"1 - Zakladni utok: {hrac.AktualniCichnamon.ZakladniUtok.Nazev}");
+              Console.WriteLine($"2 - Specialni utok: {hrac.AktualniCichnamon.SpecialniUtok.Nazev}");
+              Console.WriteLine("3 - Leceni (+30 HP)");
+              Console.Write("Tvoje volba: ");
+              string tah = Console.ReadLine();
+
+              if (tah == "1")
+                  hrac.AktualniCichnamon.ProvedZakladniUtok(pocitac.AktualniCichnamon);
+              else if (tah == "2")
+                  hrac.AktualniCichnamon.ProvedSpecialniUtok(pocitac.AktualniCichnamon);
+              else if (tah == "3")
+                  hrac.AktualniCichnamon.Uzdravi(30);
+              else
+                  Console.WriteLine("Neplatna volba, preskakuji tah.");
+          }
+          else
+          {
+              Console.WriteLine("\n--- TAH POCITACE ---");
+              int tahPocitace = rng.Next(0, 2);
+              if (tahPocitace == 0)
+                  pocitac.AktualniCichnamon.ProvedZakladniUtok(hrac.AktualniCichnamon);
+              else
+                  pocitac.AktualniCichnamon.ProvedSpecialniUtok(hrac.AktualniCichnamon);
+          }
+
+          hracNaTahu = !hracNaTahu;
+      }
+
+
+      Console.WriteLine("\n--- KONEC SOUBOJE ---");
+      if (hrac.AktualniCichnamon.JeNazivu())
+          Console.WriteLine($"{hrac.Jmeno} vyhral! Gratulace!");
+      else
+          Console.WriteLine("Prohral jsi. Nevzdavej to!");
+
+      Console.WriteLine("\nStav tveho Cichnamona:");
+      hrac.AktualniCichnamon.VypisInfo();
+  }
+}
+
+
+
+Pokud by Vám jména mých Čichnamonů připadali podobné s nějakými učiteli na naší škole, tak je to pouze čirá náhoda. Přidal jsem i nějaká svá vylepšení, které jsem našel na internetu atd. jako jsou random generátor čísel, zápis a jména různých funkcí… . Hra fungujel, tak, že zadáte své jméno jste vpuštěn do hry, vyberete si svého Čichnamona (zcela fiktivní postavy) a za něj hrajete proti náhodně vybraným Čichnomons počítače, který i náhodně používá útoky. Můžete použít 1. Základní útok 2. Speciální útok (každý Čichnamon, má svůj podle toho kdo je, ten nemůžete ale používat každé kolo) 3. Health, uzdravování se učením. 
+
+Děkuji, hezký zbytek večera
