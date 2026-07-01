@@ -239,8 +239,3 @@ class Program
   }
 }
 
-
-
-Pokud by Vám jména mých Čichnamonů připadali podobné s nějakými učiteli na naší škole, tak je to pouze čirá náhoda. Přidal jsem i nějaká svá vylepšení, které jsem našel na internetu atd. jako jsou random generátor čísel, zápis a jména různých funkcí… . Hra fungujel, tak, že zadáte své jméno jste vpuštěn do hry, vyberete si svého Čichnamona (zcela fiktivní postavy) a za něj hrajete proti náhodně vybraným Čichnomons počítače, který i náhodně používá útoky. Můžete použít 1. Základní útok 2. Speciální útok (každý Čichnamon, má svůj podle toho kdo je, ten nemůžete ale používat každé kolo) 3. Health, uzdravování se učením. 
-
-Děkuji, hezký zbytek večera
