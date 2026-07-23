@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 class Trener
 {
   public string Jmeno;
